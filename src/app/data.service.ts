@@ -10,13 +10,13 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  getAuthors(): Observable<string> {
+  getAuthors(): Observable<any> {
    
-    return this.http.get(`${this.baseUrl}/authors`, { responseType: 'text' });
+    return this.http.get(`${this.baseUrl}/authors`);
     
   }
   
-  getArticles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/titles`);
+  getArticles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/articles`);
   }
 }
