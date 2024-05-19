@@ -37,15 +37,19 @@
           <div *ngIf="articles.length > 0; else noArticles">
             <table class="table">
               <thead>
-                <tr>
+                <tr><th>ID</th>
+                  
                   <th>Title</th>
                   <th>Year</th>
+                  <th>Publication</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let articles of articles">
-                  <td>{{ articles.title }}</td>
-                  <td>{{ articles.year }}</td>
+                <tr *ngFor="let article of articles">
+                  <td>{{ article.id }}</td>
+                  <td>{{ article.title}}</td>
+                  <td>{{ article.year}}</td>
+                  <td>{{ article.publication}}</td>
                 </tr>
               </tbody>
             </table>

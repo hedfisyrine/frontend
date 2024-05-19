@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'app/data.service';
 import Chart from 'chart.js';
 
 
@@ -15,186 +16,268 @@ export class DashboardComponent implements OnInit{
   public chartColor;
   public chartEmail;
   public chartHours;
+  public lineChart: Chart;
 
-    ngOnInit(){
-      this.chartColor = "#FFFFFF";
+  public articles = [];
+  public articlesByYear = {};
+  public articlesByAuthorsCount = {};
+  public articlesByCitationCount: any; // or specify the type of data if possible
+  public articlesThisYear: number = 0;
+  public totalAuthors: number = 0;
+  constructor(private dataService: ApiService) {}
 
-      this.canvas = document.getElementById("chartHours");
-      this.ctx = this.canvas.getContext("2d");
+  ngOnInit() {
+    this.chartColor = "#FFFFFF";
+    this.getDataArticles();
 
-      this.chartHours = new Chart(this.ctx, {
-        type: 'line',
+  }
 
-        data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-          datasets: [{
-              borderColor: "#6bd098",
-              backgroundColor: "#6bd098",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
-            },
-            {
-              borderColor: "#f17e5d",
-              backgroundColor: "#f17e5d",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
-            },
-            {
-              borderColor: "#fcc468",
-              backgroundColor: "#fcc468",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
-            }
-          ]
-        },
-        options: {
-          legend: {
-            display: false
-          },
+  getDataArticles() {
+    this.dataService.getArticles().subscribe((data: any) => {
+      this.articles = data;
+      this.processArticles();
+      this.processArticlesData();
+      this.processArticlesByAuythor();
+      this.processArticlesByCitation();
+      this.init_speed_dashboard();
+      this.init_dashboard_Email();
+      this.init_chart_hour();
 
-          tooltips: {
-            enabled: false
-          },
+    });
+  }
 
-          scales: {
-            yAxes: [{
+  processArticlesData() {
+    this.articles.forEach(article => {
+      const year = article.year;
+      if (!this.articlesByYear[year]) {
+        this.articlesByYear[year] = 0;
+      }
+      this.articlesByYear[year]++;
+      
+    });
+    
 
-              ticks: {
-                fontColor: "#9f9f9f",
-                beginAtZero: false,
-                maxTicksLimit: 5,
-                //padding: 20
-              },
-              gridLines: {
-                drawBorder: false,
-                zeroLineColor: "#ccc",
-                color: 'rgba(255,255,255,0.05)'
-              }
+  }
+  processArticlesByAuythor() {
+    this.articles.forEach(article => {
+      const authorsCount = article.author_Id.length;
+      if (!this.articlesByAuthorsCount[authorsCount]) {
+        this.articlesByAuthorsCount[authorsCount] = 0;
+      }
+      this.articlesByAuthorsCount[authorsCount]++;
+    });
+  }
 
-            }],
 
-            xAxes: [{
-              barPercentage: 1.6,
-              gridLines: {
-                drawBorder: false,
-                color: 'rgba(255,255,255,0.1)',
-                zeroLineColor: "transparent",
-                display: false,
-              },
-              ticks: {
-                padding: 20,
-                fontColor: "#9f9f9f"
-              }
-            }]
-          },
+  processArticlesByCitation() {
+    // Initialize citation count ranges and their counts
+    this.articlesByCitationCount = {
+      '0-10 citations': 0,
+      '11-20 citations': 0,
+      '21-30 citations': 0,
+      // Add more ranges as needed
+    };
+
+    // Iterate through articles and update counts in articlesByCitations
+    this.articles.forEach(article => {
+      const citationCount = article.citation; // Assuming citation count is in 'citation' property
+
+      // Determine the range for this citation count
+      let range = '';
+      if (citationCount >= 0 && citationCount <= 10) {
+        range = '0-10 citations';
+      } else if (citationCount >= 11 && citationCount <= 20) {
+        range = '11-20 citations';
+      } else if (citationCount >= 21 && citationCount <= 30) {
+        range = '21-30 citations';
+      } else if (citationCount >= 31 && citationCount <= 40) {
+        range = '31-40 citations';
+      } else if (citationCount >= 41 && citationCount <= 50) {
+        range = '41-50 citations';
+      }
+      else 
+        {
+          range = '51+ citations'
         }
-      });
+      // Add more conditions for other ranges as needed
+
+      // Update the count in articlesByCitations
+      this.articlesByCitationCount[range]++;
+    });
+  }
 
 
+  processArticles() {
+    const currentYear = new Date().getFullYear();
+
+    this.articlesThisYear = this.articles.filter(article => {
+      return new Date(article.year).getFullYear() === currentYear;
+    }).length;
+
+    this.totalAuthors = new Set(
+      this.articles.reduce((acc, article) => acc.concat(article.author_Id), [])
+    ).size;
+  }
+
+  getTotalAuthors() {
+    return this.totalAuthors;
+  }
+
+  getArticlesThisYear() {
+    return this.articlesThisYear;
+  }
+
+  getAvgAuthorsPerArticle() {
+    if (this.articles.length === 0) return 0;
+    return (this.totalAuthors / this.articles.length).toFixed(2);
+  }
+
+
+  init_speed_dashboard()
+  {
+    const years = Object.keys(this.articlesByYear);
+    const counter = Object.values(this.articlesByYear);
+    var speedCanvas = document.getElementById("speedChart");
+
+    var dataSecond = {
+      data: counter,
+      fill: false,
+      borderColor: '#51CACF',
+      backgroundColor: 'transparent',
+      pointBorderColor: '#51CACF',
+      pointRadius: 4,
+      pointHoverRadius: 4,
+      pointBorderWidth: 8
+    };
+
+    var speedData = {
+      labels: years,
+      datasets: [ dataSecond]
+    };
+
+    var chartOptions = {
+      legend: {
+        display: false,
+        position: 'top'
+      }
+    };
+
+    this.lineChart = new Chart(speedCanvas, {
+      type: 'line',
+      hover: false,
+      data: speedData,
+      options: chartOptions
+    });
+  }   
+
+
+
+
+
+  init_chart_hour() {
+    // Step 1: Calculate the number of articles by publication
+    const publicationsCount = {};
+  
+    this.articles.forEach(article => {
+      const publication = article.publication;
+      if (!publicationsCount[publication]) {
+        publicationsCount[publication] = 0;
+      }
+      publicationsCount[publication]++;
+    });
+  
+    // Step 2: Prepare data for bar chart
+    const publicationLabels = Object.keys(publicationsCount);
+    const publicationData = Object.values(publicationsCount);
+  
+    // Step 3: Create the bar chart
+    this.canvas = document.getElementById("chartHours");
+    this.ctx = this.canvas.getContext("2d");
+  
+    this.chartHours = new Chart(this.ctx, {
+      type: 'bar',
+      data: {
+        labels: publicationLabels,
+        datasets: [{
+          label: "Number of Articles by Publication",
+          backgroundColor: '#36A2EB', // Blue color for bars
+          data: publicationData
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        tooltips: {
+          enabled: true
+        },
+      }
+    });
+  }
+  
+  
+  
+  
+  
+     
+   
+    init_dashboard_Email() {
+      const authorsCounts = Object.keys(this.articlesByAuthorsCount);
+      const counts = Object.values(this.articlesByAuthorsCount);
+    
+      // Get the canvas and context
       this.canvas = document.getElementById("chartEmail");
       this.ctx = this.canvas.getContext("2d");
+    
+      // Initialize the pie chart
       this.chartEmail = new Chart(this.ctx, {
         type: 'pie',
         data: {
-          labels: [1, 2, 3],
+          labels: authorsCounts,
           datasets: [{
-            label: "Emails",
-            pointRadius: 0,
-            pointHoverRadius: 0,
+            label: "Articles",
             backgroundColor: [
               '#e3e3e3',
               '#4acccd',
               '#fcc468',
-              '#ef8157'
+              '#ef8157',
+              '#cf8227'
             ],
-            borderWidth: 0,
-            data: [342, 480, 530, 120]
+            data: counts
           }]
         },
-
         options: {
-
           legend: {
-            display: false
+            display: true, // Display the legend
+            position: 'right', // Position the legend to the right
           },
-
           pieceLabel: {
             render: 'percentage',
-            fontColor: ['white'],
+            fontColor: 'white',
             precision: 2
           },
-
           tooltips: {
-            enabled: false
-          },
-
-          scales: {
-            yAxes: [{
-
-              ticks: {
-                display: false
-              },
-              gridLines: {
-                drawBorder: false,
-                zeroLineColor: "transparent",
-                color: 'rgba(255,255,255,0.05)'
-              }
-
-            }],
-
-            xAxes: [{
-              barPercentage: 1.6,
-              gridLines: {
-                drawBorder: false,
-                color: 'rgba(255,255,255,0.1)',
-                zeroLineColor: "transparent"
-              },
-              ticks: {
-                display: false,
-              }
-            }]
+            enabled: true // Enable tooltips to display data on hover
           },
         }
-      });
-
-      var speedCanvas = document.getElementById("speedChart");
-
-      
-
-      var dataSecond = {
-        data: [0, 5, 10, 12, 20, 27, 30, 34, 42, 45, 55, 63],
-        fill: false,
-        borderColor: '#51CACF',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#51CACF',
-        pointRadius: 4,
-        pointHoverRadius: 4,
-        pointBorderWidth: 8
-      };
-
-      var speedData = {
-        labels: ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"],
-        datasets: [ dataSecond]
-      };
-
-      var chartOptions = {
-        legend: {
-          display: false,
-          position: 'top'
-        }
-      };
-
-      var lineChart = new Chart(speedCanvas, {
-        type: 'line',
-        hover: false,
-        data: speedData,
-        options: chartOptions
       });
     }
-}
+    
+
+
+
+
+    }
+
+
+
+
+
+  

@@ -8,8 +8,8 @@ import { ApiService } from '../../data.service';
 })
 export class TableComponent implements OnInit {
   title = 'frontend';
-  authors: any[] = [];
-  articles: any[] = [];
+  authors: any;
+  articles: any;
   loadingArticles = false;
   errorFetchingArticles = false;
 
@@ -17,27 +17,20 @@ export class TableComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAuthors();
-    this.fetchArticles();
+     this.fetchArticles();
   }
 
   fetchAuthors() {
-    this.apiService.getAuthors().subscribe((data: string) => {
-      const authorsArray = data.split('\n').map((author: string) => JSON.parse(author));
-      this.authors = authorsArray;
+    this.apiService.getAuthors().subscribe((data: any) => {
+      this.authors = data;
+     
     });
   }
 
-  async fetchArticles() {
-    this.loadingArticles = true;
-    this.errorFetchingArticles = false;
-
-    try {
-      this.articles = await this.apiService.getArticles().toPromise();
-      this.loadingArticles = false;
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      this.loadingArticles = false;
-      this.errorFetchingArticles = true;
-    }
+  fetchArticles() {
+    this.apiService.getArticles().subscribe((data: any) => {
+      this.articles = data;
+      console.log("articles " , data)
+    });
   }
 }

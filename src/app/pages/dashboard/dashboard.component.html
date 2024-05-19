@@ -1,30 +1,88 @@
 <div class="row">
   <div class="col-lg-3 col-md-6 col-sm-6">
     <div class="card card-stats">
-      
-      
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-globe text-warning"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Total Articles</p>
+              <p class="card-title">{{ articles.length }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
     <div class="card card-stats">
-     
-      
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-single-02 text-success"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Total Authors</p>
+              <p class="card-title">{{ getTotalAuthors() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
-    
+    <div class="card card-stats">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-time-alarm text-danger"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Articles This Year</p>
+              <p class="card-title">{{ getArticlesThisYear() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
-    
-    
+    <div class="card card-stats">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-user-run text-info"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Avg. Authors per Article</p>
+              <p class="card-title">{{ getAvgAuthorsPerArticle() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
 <div class="row">
   <div class="col-md-12">
     <div class="card ">
       <div class="card-header ">
-        <h5 class="card-title">Users Behavior</h5>
-        <p class="card-category">24 Hours performance</p>
+        <h5 class="card-title">Number of Articles Per publication</h5>
+        <p class="card-category"></p>
       </div>
       <div class="card-body ">
         <canvas id=chartHours width="400" height="100"></canvas>
@@ -42,22 +100,19 @@
   <div class="col-md-4">
     <div class="card ">
       <div class="card-header ">
-        <h5 class="card-title">Email Statistics</h5>
-        <p class="card-category">Last Campaign Performance</p>
+        <h5 class="card-title">Distribution of Articles Per Number  of Authors</h5>
+        <p class="card-category"></p>
       </div>
       <div class="card-body ">
         <canvas id="chartEmail"></canvas>
       </div>
       <div class="card-footer ">
         <div class="legend">
-          <i class="fa fa-circle text-primary"></i> Opened
-          <i class="fa fa-circle text-warning"></i> Read
-          <i class="fa fa-circle text-danger"></i> Deleted
-          <i class="fa fa-circle text-gray"></i> Unopened
+
         </div>
         <hr>
         <div class="stats">
-          <i class="fa fa-calendar"></i> Number of emails sent
+          <i class="fa fa-calendar"></i> Articles per author
         </div>
       </div>
     </div>
@@ -65,7 +120,7 @@
   <div class="col-md-8">
     <div class="card card-chart">
       <div class="card-header">
-        <h5 class="card-title">NASDAQ: AAPL</h5>
+        <h5 class="card-title">Number of Articles per Year</h5>
         <p class="card-category">Line Chart with Points</p>
       </div>
       <div class="card-body">
@@ -73,8 +128,7 @@
       </div>
       <div class="card-footer">
         <div class="chart-legend">
-          <i class="fa fa-circle text-info"></i> Tesla Model S
-         
+          <i class="fa fa-circle text-info"></i> Number of Articles
         </div>
         <hr/>
         <div class="card-stats">
@@ -83,4 +137,5 @@
       </div>
     </div>
   </div>
+  
 </div>
