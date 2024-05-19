@@ -14,8 +14,8 @@ export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Dashboard',      icon:'nc-bank',       class: ''  },
     { path: '/maps',          title: 'Maps',              icon:'nc-pin-3',      class: '' },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '' },
-    { path: '/table', title: 'Authors', icon: 'nc-single-02', class: ''},
-    { path: '/table', title: 'Articles', icon: 'nc-paper', class: '' },
+    { path: '/authors', title: 'Authors', icon: 'nc-single-02', class: ''},
+    { path: '/articles', title: 'Articles', icon: 'nc-paper', class: '' },
 ];
 
 @Component({

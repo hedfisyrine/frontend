@@ -14,6 +14,8 @@ import { AppComponent } from './app.component';
 import { AppRoutes } from './app.routing';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { AuthorComponent } from './pages/author/author.component';
+import { ArticleComponent } from './pages/article/article.component';
 
 
 
@@ -21,6 +23,8 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
   declarations: [
     AppComponent,
     AdminLayoutComponent,
+    AuthorComponent,
+    ArticleComponent,
     
   ],
   imports: [

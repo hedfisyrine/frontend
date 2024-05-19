@@ -1,30 +1,88 @@
 <div class="row">
   <div class="col-lg-3 col-md-6 col-sm-6">
     <div class="card card-stats">
-      
-      
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-globe text-warning"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Total Articles</p>
+              <p class="card-title">{{ articles.length }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
     <div class="card card-stats">
-     
-      
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-single-02 text-success"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Total Authors</p>
+              <p class="card-title">{{ getTotalAuthors() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
-    
+    <div class="card card-stats">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-time-alarm text-danger"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Articles This Year</p>
+              <p class="card-title">{{ getArticlesThisYear() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="col-lg-3 col-md-6 col-sm-6">
-    
-    
+    <div class="card card-stats">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <div class="icon-big text-center icon-warning">
+              <i class="nc-icon nc-user-run text-info"></i>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="numbers">
+              <p class="card-category">Avg. Authors per Article</p>
+              <p class="card-title">{{ getAvgAuthorsPerArticle() }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
 <div class="row">
   <div class="col-md-12">
     <div class="card ">
       <div class="card-header ">
-        <h5 class="card-title">Users Behavior</h5>
-        <p class="card-category">24 Hours performance</p>
+        <h5 class="card-title">Number of Articles Per publication</h5>
+        <p class="card-category"></p>
       </div>
       <div class="card-body ">
         <canvas id=chartHours width="400" height="100"></canvas>

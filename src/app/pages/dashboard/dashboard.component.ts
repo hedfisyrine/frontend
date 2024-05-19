@@ -22,7 +22,8 @@ export class DashboardComponent implements OnInit{
   public articlesByYear = {};
   public articlesByAuthorsCount = {};
   public articlesByCitationCount: any; // or specify the type of data if possible
-
+  public articlesThisYear: number = 0;
+  public totalAuthors: number = 0;
   constructor(private dataService: ApiService) {}
 
   ngOnInit() {
@@ -34,10 +35,13 @@ export class DashboardComponent implements OnInit{
   getDataArticles() {
     this.dataService.getArticles().subscribe((data: any) => {
       this.articles = data;
+      this.processArticles();
       this.processArticlesData();
       this.processArticlesByAuythor();
+      this.processArticlesByCitation();
       this.init_speed_dashboard();
       this.init_dashboard_Email();
+      this.init_chart_hour();
 
     });
   }
@@ -86,12 +90,46 @@ export class DashboardComponent implements OnInit{
         range = '11-20 citations';
       } else if (citationCount >= 21 && citationCount <= 30) {
         range = '21-30 citations';
+      } else if (citationCount >= 31 && citationCount <= 40) {
+        range = '31-40 citations';
+      } else if (citationCount >= 41 && citationCount <= 50) {
+        range = '41-50 citations';
       }
+      else 
+        {
+          range = '51+ citations'
+        }
       // Add more conditions for other ranges as needed
 
       // Update the count in articlesByCitations
       this.articlesByCitationCount[range]++;
     });
+  }
+
+
+  processArticles() {
+    const currentYear = new Date().getFullYear();
+
+    this.articlesThisYear = this.articles.filter(article => {
+      return new Date(article.year).getFullYear() === currentYear;
+    }).length;
+
+    this.totalAuthors = new Set(
+      this.articles.reduce((acc, article) => acc.concat(article.author_Id), [])
+    ).size;
+  }
+
+  getTotalAuthors() {
+    return this.totalAuthors;
+  }
+
+  getArticlesThisYear() {
+    return this.articlesThisYear;
+  }
+
+  getAvgAuthorsPerArticle() {
+    if (this.articles.length === 0) return 0;
+    return (this.totalAuthors / this.articles.length).toFixed(2);
   }
 
 
@@ -136,71 +174,46 @@ export class DashboardComponent implements OnInit{
 
 
 
-
   init_chart_hour() {
-    // Step 1: Calculate citation count ranges and count articles in each range
-    const citationRanges = {
-      "0-10 citations": 0,
-      "11-20 citations": 0,
-      "21-30 citations": 0,
-      "31-40 citations": 0,
-      "41-50 citations": 0,
-      "51+ citations": 0
-    };
+    // Step 1: Calculate the number of articles by publication
+    const publicationsCount = {};
   
-    // Assuming you have a data structure like articlesByCitationCount
-    // where articlesByCitationCount[citation] gives the count of articles with that citation
-    for (const citation in this.articlesByCitationCount) {
-      const count = this.articlesByCitationCount[citation];
-      if (count >= 0 && count <= 10) {
-        citationRanges["0-10 citations"] += count;
-      } else if (count >= 11 && count <= 20) {
-        citationRanges["11-20 citations"] += count;
-      } else if (count >= 21 && count <= 30) {
-        citationRanges["21-30 citations"] += count;
-      } else if (count >= 31 && count <= 40) {
-        citationRanges["31-40 citations"] += count;
-      } else if (count >= 41 && count <= 50) {
-        citationRanges["41-50 citations"] += count;
-      } else {
-        citationRanges["51+ citations"] += count;
+    this.articles.forEach(article => {
+      const publication = article.publication;
+      if (!publicationsCount[publication]) {
+        publicationsCount[publication] = 0;
       }
-    }
+      publicationsCount[publication]++;
+    });
   
-    // Step 2: Prepare data for pie chart
-    const citationLabels = Object.keys(citationRanges);
-    const citationData = Object.values(citationRanges);
+    // Step 2: Prepare data for bar chart
+    const publicationLabels = Object.keys(publicationsCount);
+    const publicationData = Object.values(publicationsCount);
   
-    // Step 3: Create the pie chart
+    // Step 3: Create the bar chart
     this.canvas = document.getElementById("chartHours");
     this.ctx = this.canvas.getContext("2d");
   
     this.chartHours = new Chart(this.ctx, {
-      type: 'pie',
+      type: 'bar',
       data: {
-        labels: citationLabels,
+        labels: publicationLabels,
         datasets: [{
-          label: "Articles by Citation Count Range",
-          backgroundColor: [
-            '#e3e3e3',
-            '#4acccd',
-            '#fcc468',
-            '#ef8157',
-            '#36A2EB',
-            '#FF6384'
-          ],
-          data: citationData
+          label: "Number of Articles by Publication",
+          backgroundColor: '#36A2EB', // Blue color for bars
+          data: publicationData
         }]
       },
       options: {
         legend: {
-          display: true,
-          position: 'right'
+          display: false
         },
-        pieceLabel: {
-          render: 'percentage',
-          fontColor: 'white',
-          precision: 2
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
         },
         tooltips: {
           enabled: true
@@ -208,6 +221,10 @@ export class DashboardComponent implements OnInit{
       }
     });
   }
+  
+  
+  
+  
   
      
    
